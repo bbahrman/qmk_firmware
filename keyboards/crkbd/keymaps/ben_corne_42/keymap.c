@@ -1,23 +1,6 @@
-/*
-Copyright 2019 @foostan
-Copyright 2020 Drashna Jaelre <@drashna>
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
 #include QMK_KEYBOARD_H
 
+// --- Always compile the keymap array ---
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [0] = LAYOUT_split_3x6_3(
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
@@ -76,4 +59,31 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
   [2] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(RM_VALD, RM_VALU), ENCODER_CCW_CW(KC_RGHT, KC_LEFT), },
   [3] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(RM_VALD, RM_VALU), ENCODER_CCW_CW(KC_RGHT, KC_LEFT), },
 };
+#endif
+#if defined(OLED_ENABLE) || defined(OLED_DRIVER_ENABLE)
+#    include "oled_driver.h"
+
+// 1) Rotate per side (try 270 for the master, 90 for the off-hand).
+oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+    return OLED_ROTATION_270;
+}
+
+// 2) Map your layer number to a label
+static const char *layer_name(void) {
+    switch (get_highest_layer(layer_state)) {                                                                           
+        case 0: return "BASE";
+        case 1: return "NUM";
+        case 2: return "SYM";
+        case 3: return "ADJ";
+        default: return "LAYER?";
+    }
+}
+
+// 3) Draw only the layer name (top-left); rotate handles orientation
+bool oled_task_user(void) {
+    oled_clear();                  // optional: clear to avoid leftovers when labels change
+    oled_set_cursor(0, 0);
+    oled_write_ln(layer_name(), false);
+    return false;
+}
 #endif
