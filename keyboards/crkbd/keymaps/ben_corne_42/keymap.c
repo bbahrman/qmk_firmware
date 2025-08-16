@@ -62,28 +62,69 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 #endif
 #if defined(OLED_ENABLE) || defined(OLED_DRIVER_ENABLE)
 #    include "oled_driver.h"
+#    include "quantum.h"
+#    include <stdio.h>
 
-// 1) Rotate per side (try 270 for the master, 90 for the off-hand).
+// Rotate for vertical mount (swap 90/270 if your halves are flipped)
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
+#ifdef SPLIT_KEYBOARD
     return OLED_ROTATION_270;
+#endif
 }
 
-// 2) Map your layer number to a label
-static const char *layer_name(void) {
-    switch (get_highest_layer(layer_state)) {                                                                           
+// How many text rows your display has
+#if defined(OLED_DISPLAY_128X64)
+#    define OLED_ROWS 8
+#else
+#    define OLED_ROWS 4
+#endif
+
+// Label known layers (edit names to match your layout)
+static const char *label_for_layer(uint8_t l) {
+    switch (l) {
         case 0: return "BASE";
         case 1: return "NUM";
         case 2: return "SYM";
         case 3: return "ADJ";
-        default: return "LAYER?";
+        default: return NULL; // we'll fall back to "L<n>"
     }
 }
 
-// 3) Draw only the layer name (top-left); rotate handles orientation
+// Collect active layers into out[], from highest -> lowest.
+// Returns count (capped at out_len).
+static uint8_t collect_active_layers(uint8_t *out, uint8_t out_len) {
+    layer_state_t s = layer_state | default_layer_state;  // include base layers
+    uint8_t count = 0;
+    // Scan from top (31) down so we get precedence order
+    for (int8_t l = 31; l >= 0 && count < out_len; l--) {
+        if (s & ((layer_state_t)1u << l)) {
+            out[count++] = (uint8_t)l;
+        }
+    }
+    return count;
+}
+
 bool oled_task_user(void) {
-    oled_clear();                  // optional: clear to avoid leftovers when labels change
-    oled_set_cursor(0, 0);
-    oled_write_ln(layer_name(), false);
+    oled_clear();
+
+    uint8_t active[OLED_ROWS];
+    uint8_t n = collect_active_layers(active, OLED_ROWS);
+
+    for (uint8_t row = 0; row < OLED_ROWS; row++) {
+        oled_set_cursor(0, row);
+        if (row < n) {
+            const char *name = label_for_layer(active[row]);
+            if (name) {
+                oled_write_ln(name, false);
+            } else {
+                char buf[6];
+                snprintf(buf, sizeof buf, "L%u", active[row]);
+                oled_write_ln(buf, false);
+            }
+        } else {
+            oled_write_ln_P(PSTR("     "), false);  // blank line for unused rows
+        }
+    }
     return false;
 }
 #endif
