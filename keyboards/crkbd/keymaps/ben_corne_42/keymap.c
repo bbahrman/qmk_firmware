@@ -28,7 +28,7 @@ enum combos {
 	CAPS_LOCK
 };
 
-const uint16_t PROGMEM caps_lock[] = { KC_G,   	KC_H, COMBO_END };
+const uint16_t PROGMEM caps_lock[] = { KC_G,   	KC_M, COMBO_END };
 combo_t key_combos[] = {
 	COMBO(caps_lock, KC_CAPS)
 };
