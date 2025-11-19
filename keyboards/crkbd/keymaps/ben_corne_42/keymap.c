@@ -276,6 +276,42 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	return true; // default to allow other keycodes to process
 }
 
+#ifdef RGB_MATRIX_ENABLE
+// RGB matrix indicators for caps lock and layer 4
+bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
+    led_t led_state = host_keyboard_led_state();
+    layer_state_t layers = layer_state | default_layer_state;
+    
+    // Helper function to set LED color at a specific matrix position
+    void set_led_at_pos(uint8_t row, uint8_t col, uint8_t r, uint8_t g, uint8_t b) {
+        if (row < MATRIX_ROWS && col < MATRIX_COLS) {
+            uint8_t led_index = g_led_config.matrix_co[row][col];
+            if (led_index != NO_LED && led_index >= led_min && led_index <= led_max) {
+                rgb_matrix_set_color(led_index, r, g, b);
+            }
+        }
+    }
+    
+    // When caps lock is active: Set G (R1C5) and M (R5C5) to red
+    // RGB_RED is defined as 0xFF, 0x00, 0x00 (macro, not struct)
+    if (led_state.caps_lock) {
+        set_led_at_pos(1, 5, RGB_RED); // G key
+        set_led_at_pos(5, 5, RGB_RED); // M key
+    }
+    
+    // When layer 4 is active: Set U, N, E, I to yellow
+    // RGB_YELLOW is defined as 0xFF, 0xFF, 0x00 (macro, not struct)
+    if (IS_LAYER_ON_STATE(layers, 4)) {
+        set_led_at_pos(4, 3, RGB_YELLOW); // U key
+        set_led_at_pos(5, 4, RGB_YELLOW); // N key
+        set_led_at_pos(5, 3, RGB_YELLOW); // E key
+        set_led_at_pos(5, 2, RGB_YELLOW); // I key
+    }
+    
+    return false; // We've handled the indicators
+}
+#endif
+
 #ifdef ENCODER_MAP_ENABLE
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
   [0] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(RM_VALD, RM_VALU), ENCODER_CCW_CW(KC_RGHT, KC_LEFT), },
