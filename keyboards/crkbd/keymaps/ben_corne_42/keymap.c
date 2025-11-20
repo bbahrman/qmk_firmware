@@ -296,7 +296,7 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
     // RGB_RED is defined as 0xFF, 0x00, 0x00 (macro, not struct)
     if (led_state.caps_lock) {
         set_led_at_pos(1, 5, RGB_RED); // G key
-        set_led_at_pos(5, 5, RGB_RED); // M key
+        set_led_at_pos(5, 5, RGB_RED); // M key TODO figure out why this won't work
     }
     
     // When layer 4 is active: Set U, N, E, I to yellow
@@ -306,6 +306,36 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_led_at_pos(5, 4, RGB_YELLOW); // N key
         set_led_at_pos(5, 3, RGB_YELLOW); // E key
         set_led_at_pos(5, 2, RGB_YELLOW); // I key
+        set_led_at_pos(6, 4, RGB_PURPLE); // H key
+        set_led_at_pos(6, 2, RGB_PURPLE); // . key
+    }
+
+    // Numbers
+    if (IS_LAYER_ON_STATE(layers, 1)) {
+        set_led_at_pos(0, 0, RGB_RED); // ESC
+        set_led_at_pos(0, 1, RGB_YELLOW);
+        set_led_at_pos(0, 2, RGB_YELLOW);
+        set_led_at_pos(0, 3, RGB_YELLOW);
+        set_led_at_pos(0, 4, RGB_YELLOW);
+        set_led_at_pos(0, 5, RGB_YELLOW);
+        set_led_at_pos(4, 5, RGB_YELLOW);
+        set_led_at_pos(4, 4, RGB_YELLOW);
+        set_led_at_pos(4, 3, RGB_YELLOW);
+        set_led_at_pos(4, 2, RGB_YELLOW);
+        set_led_at_pos(4, 1, RGB_YELLOW);
+    }
+
+    // 10 key
+    if (IS_LAYER_ON_STATE(layers, 3)) {
+        set_led_at_pos(4, 5, RGB_YELLOW);
+        set_led_at_pos(4, 4, RGB_YELLOW);
+        set_led_at_pos(4, 3, RGB_YELLOW);
+        set_led_at_pos(5, 5, RGB_YELLOW);
+        set_led_at_pos(5, 4, RGB_YELLOW);
+        set_led_at_pos(5, 3, RGB_YELLOW);
+        set_led_at_pos(6, 5, RGB_YELLOW);
+        set_led_at_pos(6, 4, RGB_YELLOW);
+        set_led_at_pos(6, 3, RGB_YELLOW);
     }
     
     return false; // We've handled the indicators
