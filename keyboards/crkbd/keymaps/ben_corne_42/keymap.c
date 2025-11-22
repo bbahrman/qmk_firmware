@@ -379,6 +379,15 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_led_at_pos(6, 2, RGB_PURPLE); // . key
     }
 
+        // When layer 4 is active: Set U, N, E, I to yellow
+    // RGB_YELLOW is defined as 0xFF, 0xFF, 0x00 (macro, not struct)
+    if (IS_LAYER_ON_STATE(layers, 7)) {
+        set_led_at_pos(4, 3, RGB_PURPLE); // U key
+        set_led_at_pos(5, 4, RGB_PURPLE); // N key
+        set_led_at_pos(5, 3, RGB_PURPLE); // E key
+        set_led_at_pos(5, 2, RGB_PURPLE); // I key
+    }
+
     // Numbers
     if (IS_LAYER_ON_STATE(layers, 1)) {
         set_led_at_pos(0, 1, RGB_YELLOW);
@@ -391,6 +400,20 @@ bool rgb_matrix_indicators_advanced_user(uint8_t led_min, uint8_t led_max) {
         set_led_at_pos(4, 3, RGB_YELLOW);
         set_led_at_pos(4, 2, RGB_YELLOW);
         set_led_at_pos(4, 1, RGB_YELLOW);
+    }
+
+    // symbols
+    if (IS_LAYER_ON_STATE(layers, 2)) {
+        set_led_at_pos(0, 1, RGB_MAGENTA);
+        set_led_at_pos(0, 2, RGB_MAGENTA);
+        set_led_at_pos(0, 3, RGB_MAGENTA);
+        set_led_at_pos(0, 4, RGB_MAGENTA);
+        set_led_at_pos(0, 5, RGB_MAGENTA);
+        set_led_at_pos(4, 5, RGB_MAGENTA);
+        set_led_at_pos(4, 4, RGB_MAGENTA);
+        set_led_at_pos(4, 3, RGB_MAGENTA);
+        set_led_at_pos(4, 2, RGB_MAGENTA);
+        set_led_at_pos(4, 1, RGB_MAGENTA);
     }
 
     // 10 key
@@ -423,75 +446,4 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
   [2] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(RM_VALD, RM_VALU), ENCODER_CCW_CW(KC_RGHT, KC_LEFT), },
   [3] = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_MPRV, KC_MNXT), ENCODER_CCW_CW(RM_VALD, RM_VALU), ENCODER_CCW_CW(KC_RGHT, KC_LEFT), },
 };
-#endif
-#if defined(OLED_ENABLE) || defined(OLED_DRIVER_ENABLE)
-#    include "oled_driver.h"
-#    include "quantum.h"
-#    include <stdio.h>
-
-// Rotate for vertical mount (swap 90/270 if your halves are flipped)
-oled_rotation_t oled_init_user(oled_rotation_t rotation) {
-#ifdef SPLIT_KEYBOARD
-    return OLED_ROTATION_270;
-#endif
-}
-
-// How many text rows your display has
-#if defined(OLED_DISPLAY_128X64)
-#    define OLED_ROWS 8
-#else
-#    define OLED_ROWS 4
-#endif
-
-// Label known layers (edit names to match your layout)
-static const char *label_for_layer(uint8_t l) {
-    switch (l) {
-        case 0: return "COLE";
-        case 1: return "NUM";
-        case 2: return "SYM";
-        case 3: return "TEN";
-        case 4: return "NAV/P";
-        case 5: return "SYS";
-        case 8: return "QUER";
-        default: return NULL; // we'll fall back to "L<n>"
-    }
-}
-
-// Collect active layers into out[], from highest -> lowest.
-// Returns count (capped at out_len).
-static uint8_t collect_active_layers(uint8_t *out, uint8_t out_len) {
-    layer_state_t s = layer_state | default_layer_state;  // include base layers
-    uint8_t count = 0;
-    // Scan from top (31) down so we get precedence order
-    for (int8_t l = 31; l >= 0 && count < out_len; l--) {
-        if (s & ((layer_state_t)1u << l)) {
-            out[count++] = (uint8_t)l;
-        }
-    }
-    return count;
-}
-
-bool oled_task_user(void) {
-    oled_clear();
-
-    uint8_t active[OLED_ROWS];
-    uint8_t n = collect_active_layers(active, OLED_ROWS);
-
-    for (uint8_t row = 0; row < OLED_ROWS; row++) {
-        oled_set_cursor(0, row);
-        if (row < n) {
-            const char *name = label_for_layer(active[row]);
-            if (name) {
-                oled_write_ln(name, false);
-            } else {
-                char buf[6];
-                snprintf(buf, sizeof buf, "L%u", active[row]);
-                oled_write_ln(buf, false);
-            }
-        } else {
-            oled_write_ln_P(PSTR("     "), false);  // blank line for unused rows
-        }
-    }
-    return false;
-}
 #endif
