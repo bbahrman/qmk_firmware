@@ -12,7 +12,7 @@ enum user_keycodes {
 	CMD_OPT_LEFT, // WebStorm navigate back
 	CMD_OPT_RIGHT, // Webstorm navigate forward
 	RBG_COLOR_TOGGLE,
-	OPTION_SHIFT_V, // paste app
+	PASTE, // paste app
 	MACRO_ARROW_FUNC,
 	MACRO_PAREN_AND_BLOCK,
 	NETSUITE,
@@ -113,7 +113,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   //|--------+---------------------+---------------------+---------------------+---------------------+---------------------|                    |---------------------+---------------------+---------------------+---------------------+---------------------+---------------------|
       CMD_F,   _______,              _______,               _______,                 _______,                 _______,                                     _______,         CMD_LEFT,                 _______,              CMD_RIGHT,               _______,              _______,
   //|--------+---------------------+---------------------+---------------------+---------------------+---------------------|                    |---------------------+---------------------+---------------------+---------------------+---------------------+---------------------|
-                                                            OPTION_SHIFT_V,                KC_TAB,      TG(4),                                          KC_ENT,           KC_SPC,           TG(7)
+                                                            PASTE,                KC_TAB,      TG(4),                                          KC_ENT,           KC_SPC,           TG(7)
                                                         //`---------------------+---------------------+---------------------'                      `---------------------+---------------------+---------------------|'
 
   ),
@@ -200,9 +200,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				tap_code16(LGUI(KC_RIGHT));
 			}
 			return false; // end execution
-		case OPTION_SHIFT_V:
+		case PASTE:
 			if (record->event.pressed) {
-				tap_code16(A(S(KC_V)));
+				tap_code16(C(A(S(KC_V))));
 			}
 			return false; // end execution
         case SCHEDULED:
@@ -247,16 +247,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 			return false; // end execution
             case OBSIDIAN_UP:
 			if (record->event.pressed) {
-                tap_code16(KC_END);
-                tap_code16(KC_HOME);
                 tap_code16(KC_UP);
+                tap_code16(KC_HOME);
+                tap_code16(KC_HOME);
+                tap_code16(KC_HOME);
+                tap_code16(KC_HOME);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
 			}
 			return false; // end execution
             case OBSIDIAN_DOWN:
 			if (record->event.pressed) {
-                tap_code16(KC_END);
-                tap_code16(KC_HOME);
                 tap_code16(KC_DOWN);
+                tap_code16(KC_HOME);
+                tap_code16(KC_HOME);
+                tap_code16(KC_HOME);
+                tap_code16(KC_HOME);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
+                tap_code16(KC_RIGHT);
 			}
 			return false; // end execution
 		case MACRO_ARROW_FUNC:
