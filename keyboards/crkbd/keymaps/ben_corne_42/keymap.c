@@ -18,8 +18,6 @@ enum user_keycodes {
 	NETSUITE,
 	PDF,
 	WARPD,
-    CMD_LEFT,
-    CMD_RIGHT,
     CMD_F,
     CHECKBOX,
     TAX,
@@ -29,7 +27,10 @@ enum user_keycodes {
     OBSIDIAN_UP,
     OBSIDIAN_DOWN,
     STAR,
-    CROSS_OUT
+    CROSS_OUT,
+    WEBSTORM_FORWARD,
+    WEBSTORM_BACK,
+    WEBSTORM_GO_DECLARATION
 };
 
 enum combos {
@@ -105,13 +106,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
   ),
 
-  [4] = LAYOUT_split_3x6_3( // paste app
+  [4] = LAYOUT_split_3x6_3( // paste app and nav
   //,-----------------------------------------------------.                    ,-----------------------------------------------------.
-     TO(0),    _______,            _______,               _______,                _______,                 _______,                                     _______,          _______,                 KC_UP,                  _______,                _______,                 _______,
+     TO(0),    _______,            _______,               _______,                _______,            WEBSTORM_GO_DECLARATION,                         _______,          _______,                 KC_UP,                  _______,                _______,                 _______,
   //|--------+---------------------+---------------------+---------------------+---------------------+---------------------|                    |---------------------+---------------------+---------------------+---------------------+---------------------+---------------------|
       _______,    KC_LCTL,           KC_LALT,               KC_LGUI,              KC_LSFT,                   _______,                                   KC_HOME,  	          KC_LEFT,           KC_DOWN,              KC_RIGHT,               KC_END,                 _______,
   //|--------+---------------------+---------------------+---------------------+---------------------+---------------------|                    |---------------------+---------------------+---------------------+---------------------+---------------------+---------------------|
-      CMD_F,   _______,              _______,               _______,                 _______,                 _______,                                     _______,         CMD_LEFT,                 _______,              CMD_RIGHT,               _______,              _______,
+      CMD_F,   _______,              _______,               _______,                 _______,                 _______,                                     _______,         WEBSTORM_BACK,      _______,              WEBSTORM_FORWARD,               _______,              _______,
   //|--------+---------------------+---------------------+---------------------+---------------------+---------------------|                    |---------------------+---------------------+---------------------+---------------------+---------------------+---------------------|
                                                             PASTE,                KC_TAB,      TG(4),                                          KC_ENT,           KC_SPC,           TG(7)
                                                         //`---------------------+---------------------+---------------------'                      `---------------------+---------------------+---------------------|'
@@ -185,19 +186,24 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 				tap_code16(LGUI(LALT(KC_RIGHT)));
 			}
 			return false; // end execution
-        case CMD_LEFT:
-			if (record->event.pressed) {
-				tap_code16(LGUI(KC_LEFT));
-			}
-			return false; // end execution
          case CMD_F:
 			if (record->event.pressed) {
 				tap_code16(LGUI(KC_F));
 			}
 			return false; // end execution    
-		case CMD_RIGHT:
-			if (record->event.pressed) {
-				tap_code16(LGUI(KC_RIGHT));
+        case WEBSTORM_FORWARD:
+            if (record->event.pressed) {
+				tap_code16(LGUI(KC_RBRC));
+			}
+			return false; // end execution
+        case WEBSTORM_BACK:
+            if (record->event.pressed) {
+				tap_code16(LGUI(KC_LBRC));
+			}
+			return false; // end execution
+        case WEBSTORM_GO_DECLARATION:
+            if (record->event.pressed) {
+				tap_code16(LGUI(KC_B));
 			}
 			return false; // end execution
 		case PASTE:
